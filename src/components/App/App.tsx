@@ -26,7 +26,7 @@ export default function App() {
     queryKey: ['notes', page, search],
     queryFn: () => fetchNotes({ page, perPage, search }),
     placeholderData: { notes: [], totalPages: 0 },
-    staleTime: 5000, 
+    staleTime: 5000,
   });
 
   const notes = data?.notes ?? [];
@@ -54,9 +54,12 @@ export default function App() {
 
       {notes.length > 0 ? <NoteList notes={notes} /> : !isLoading && <p>No notes found</p>}
 
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <NoteForm onClose={() => setIsOpen(false)} />
-      </Modal>
+      {}
+      {isOpen && (
+        <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+          <NoteForm onClose={() => setIsOpen(false)} />
+        </Modal>
+      )}
     </div>
   );
 }
