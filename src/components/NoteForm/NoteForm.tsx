@@ -6,7 +6,7 @@ import type { NoteTag } from '../../types/note';
 
 import css from './NoteForm.module.css';
 
-interface Props {
+interface NoteFormProps {
   onClose: () => void;
 }
 
@@ -27,11 +27,14 @@ const validationSchema = Yup.object({
     .required('Tag is required'),
 });
 
-export default function NoteForm({ onClose }: Props) {
+export default function NoteForm({ onClose }: NoteFormProps) {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: createNote,
+    mutationFn: (values: FormValues) => {
+      const payload = { ...values, updatedAt: new Date().toISOString() };
+      return createNote(payload);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
       onClose();
@@ -45,26 +48,21 @@ export default function NoteForm({ onClose }: Props) {
       onSubmit={(values) => mutation.mutate(values)}
     >
       <Form className={css.form}>
-        {}
+
         <div className={css.formGroup}>
           <label htmlFor="title">Title</label>
           <Field name="title" className={css.input} />
           <ErrorMessage name="title" component="span" className={css.error} />
         </div>
 
-        {}
+
         <div className={css.formGroup}>
           <label htmlFor="content">Content</label>
-          <Field
-            as="textarea"
-            name="content"
-            rows={8}
-            className={css.textarea}
-          />
+          <Field as="textarea" name="content" rows={8} className={css.textarea} />
           <ErrorMessage name="content" component="span" className={css.error} />
         </div>
 
-        {}
+
         <div className={css.formGroup}>
           <label htmlFor="tag">Tag</label>
           <Field as="select" name="tag" className={css.select}>
@@ -77,20 +75,12 @@ export default function NoteForm({ onClose }: Props) {
           <ErrorMessage name="tag" component="span" className={css.error} />
         </div>
 
-        {}
+
         <div className={css.actions}>
-          <button
-            type="button"
-            onClick={onClose}
-            className={css.cancelButton}
-          >
+          <button type="button" onClick={onClose} className={css.cancelButton}>
             Cancel
           </button>
-          <button
-            type="submit"
-            className={css.submitButton}
-            disabled={mutation.isPending}
-          >
+          <button type="submit" className={css.submitButton} disabled={mutation.isPending}>
             Create note
           </button>
         </div>
