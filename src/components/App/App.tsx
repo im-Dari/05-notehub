@@ -19,12 +19,14 @@ export default function App() {
   const perPage = 12;
   const handleSearch = useDebouncedCallback((value: string) => {
     setSearch(value);
-    setPage(1); 
+    setPage(1);
   }, 500);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['notes', page, search],
     queryFn: () => fetchNotes({ page, perPage, search }),
+    placeholderData: { notes: [], totalPages: 0 },
+    staleTime: 5000, 
   });
 
   const notes = data?.notes ?? [];
